@@ -3,9 +3,12 @@ package taka521.grpc.server
 import io.grpc.Server
 import io.grpc.ServerBuilder
 import io.grpc.stub.StreamObserver
-import taka521.grpc.HelloWorld
-import taka521.grpc.HelloWorldServiceGrpc
+import taka521.grpc.helloworld.HelloRequest
+import taka521.grpc.helloworld.HelloResponse
+import taka521.grpc.helloworld.HelloWorldServiceGrpc
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -16,17 +19,26 @@ class HelloWorldServer {
     internal class HelloWorldService : HelloWorldServiceGrpc.HelloWorldServiceImplBase() {
 
         override fun helloWorld(
-            request: HelloWorld.HelloRequest?,
-            responseObserver: StreamObserver<HelloWorld.HelloResponse>?
+            request: HelloRequest?,
+            responseObserver: StreamObserver<HelloResponse>?
         ) {
-            logger.info(request?.toString())
+            logger.info(
+                "id = ${request?.id}, " +
+                        "user = [name = ${request?.user?.name}, age = ${request?.user?.age}, gender = ${request?.user?.gender}]. " +
+                        "option = ${request?.option}"
+            )
             super.helloWorld(request, responseObserver)
-            responseObserver?.onNext(createRespose(request))
+            responseObserver?.onNext(createResponse(request))
             responseObserver?.onCompleted()
         }
 
-        private fun createRespose(request: HelloWorld.HelloRequest?) =
-            HelloWorld.HelloResponse.newBuilder().setMessage("Hello World.").build()
+        private fun createResponse(request: HelloRequest?): HelloResponse? {
+            logger.info(request.toString())
+            return HelloResponse.newBuilder()
+                .setMessage("Hello World.")
+                .setOption(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
+                .build()
+        }
 
     }
 
@@ -35,7 +47,7 @@ class HelloWorldServer {
         server = ServerBuilder.forPort(port).addService(HelloWorldService()).build().start()
         logger.log(Level.INFO, "hello world service started, listening on {0} port.", port)
 
-        Runtime.getRuntime().addShutdownHook(object: Thread() {
+        Runtime.getRuntime().addShutdownHook(object : Thread() {
             override fun run() {
                 System.err.println("hello world server is shutting down...")
                 this@HelloWorldServer.stop()
