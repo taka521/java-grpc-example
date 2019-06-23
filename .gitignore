@@ -105,6 +105,7 @@ local.properties
 .scala_dependencies
 .worksheet
 ### Java template
+build
 # Compiled class file
 *.class
 

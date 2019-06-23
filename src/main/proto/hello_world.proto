@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_package = "taka521.grpc";
+
+service HelloWorldService {
+    rpc helloWorld(HelloRequest) returns (HelloResponse) {}
+}
+
+message HelloRequest {
+    enum GENDER {
+        MAN = 0;
+        WOMAN = 1;
+    }
+    message User {
+        string name = 1;
+        int32 age = 2;
+        GENDER gender = 3;
+    }
+
+    uint64 id = 1;
+    User user = 2;
+    string option = 3;
+}
+
+message HelloResponse {
+    string message = 1;
+    string option = 2;
+}
