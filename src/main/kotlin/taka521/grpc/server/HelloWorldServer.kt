@@ -27,7 +27,6 @@ class HelloWorldServer {
                         "user = [name = ${request?.user?.name}, age = ${request?.user?.age}, gender = ${request?.user?.gender}]. " +
                         "option = ${request?.option}"
             )
-            super.helloWorld(request, responseObserver)
             responseObserver?.onNext(createResponse(request))
             responseObserver?.onCompleted()
         }
